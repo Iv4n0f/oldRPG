@@ -148,7 +148,7 @@ public:
 
     void primera(Personaje &objetivo) // BERSERKER
     {
-        vida -= 15;
+        setVida(getVida() - 15);
 
         int random = rand() % 100;
         if (random < 33)
@@ -174,7 +174,7 @@ public:
         }
         else
         {
-            vida += 15;
+            setVida(getVida() + 15);
             renderizarAtaque(window, sprite_curarse, derecha);
         }
     }
@@ -213,7 +213,7 @@ public:
             // 33% robar 1 de daño del objetivo
             int daño_enemigo = objetivo.getDaño();
             objetivo.setDaño(daño_enemigo - 1);
-            daño += 1;
+            setDaño(getDaño() + 1);
             renderizarCentro(window, sprite_robar);
         }
         else
@@ -221,7 +221,7 @@ public:
             // 33% robar 15 de vida del objetivo
             int vida_enemigo = objetivo.getVida();
             objetivo.setVida(vida_enemigo - 15);
-            vida += 15;
+            setVida(getVida() + 15);
             renderizarCentro(window, sprite_robar);
         }
     }
@@ -274,13 +274,14 @@ public:
             int vida = objetivo.getVida();
             vida -= daño;
             objetivo.setVida(vida);
+
             renderizarAtaque(window, sprite_ataque, objetivo.getDerecha());
         }
     }
 
     void primera(Personaje &objetivo) // PRECISION
     {
-        vida -= 15;
+        setVida(getVida() - 15);
 
         int daño = getDaño() + 10;
         int vida = objetivo.getVida();
