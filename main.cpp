@@ -36,7 +36,7 @@ public:
         std::cout << "El ataque ha fallado" << std::endl;
         failSprite.setPosition(200, 50);
         window->draw(failSprite);
-        window->display();         // Mostrar la ventana
+        window->display();           // Mostrar la ventana
         sf::sleep(sf::seconds(1.5)); // Pausar la ejecución durante 2 segundos
     }
 
@@ -62,7 +62,7 @@ public:
     void setVida(int vida) { this->vida = vida; }
     void setDaño(int daño) { this->daño = daño; }
 
-    void ataque(Personaje &objetivo)
+    virtual void ataque(Personaje &objetivo)
     {
         int random = rand() % 100;
         if (random < 20)
@@ -181,6 +181,22 @@ public:
         daño = 15;
     }
 
+    void ataque(Personaje &objetivo) // Redefinir ataque para que sea más preciso
+    {
+        int random = rand() % 100;
+        if (random < 10) // Menos probabilidad de fallar
+        {
+            renderizarFallo();
+        }
+        else
+        {
+            int daño = getDaño();
+            int vida = objetivo.getVida();
+            vida -= daño;
+            objetivo.setVida(vida);
+        }
+    }
+
     void ataque_preciso(Personaje &objetivo)
     {
         vida -= 13;
@@ -201,7 +217,8 @@ public:
             vida -= daño;
             objetivo.setVida(vida);
         }
-        else{
+        else
+        {
             int daño = getDaño() - 5;
             int vida = objetivo.getVida();
             vida -= daño;
@@ -211,7 +228,7 @@ public:
 };
 
 int main()
-{   
+{
     srand(time(NULL));
     sf::RenderWindow window(sf::VideoMode(800, 600), "Escalando y posicionando un Sprite");
 
