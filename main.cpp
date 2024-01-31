@@ -254,7 +254,7 @@ public:
         : Personaje(filename, windowPtr, derecha)
     {
         vida = 100;
-        daño = 15;
+        daño = 13;
         textura_critico.loadFromFile("critico.png");
         sprite_critico.setTexture(textura_critico);
         textura_hud.loadFromFile("hud_arquero.png");
@@ -280,9 +280,9 @@ public:
 
     void primera(Personaje &objetivo) // PRECISION
     {
-        vida -= 13;
+        vida -= 15;
 
-        int daño = getDaño() * 2;
+        int daño = getDaño() + 10;
         int vida = objetivo.getVida();
         vida -= daño;
         objetivo.setVida(vida);
@@ -294,7 +294,7 @@ public:
         int random = rand() % 100;
         if (random < 33)
         {
-            int daño = getDaño() + 10;
+            int daño = getDaño() + 15;
             int vida = objetivo.getVida();
             vida -= daño;
             objetivo.setVida(vida);
@@ -302,7 +302,7 @@ public:
         }
         else
         {
-            int daño = getDaño() - 5;
+            int daño = getDaño() - 6;
             int vida = objetivo.getVida();
             vida -= daño;
             objetivo.setVida(vida);
@@ -336,8 +336,7 @@ void renderizarEstadoDelJuego(sf::RenderWindow *window, Personaje *personaje_izq
     window->draw(sprite_vida);
     window->draw(text_vida_derecha);
 
-
-    sf::Color cafe(200,150,0);
+    sf::Color cafe(200, 150, 0);
     sf::Text text_daño_izquierda;
     text_daño_izquierda.setFont(font);
     text_daño_izquierda.setCharacterSize(16);
@@ -402,50 +401,50 @@ int main()
     sprite_daño.setTexture(textura_daño);
 
     // Crear personajes
-    /*     std ::cout << "Personaje izquierda: " << std::endl;
-        std ::cout << "1. Guerrero" << std::endl;
-        std ::cout << "2. Mago" << std::endl;
-        std ::cout << "3. Arquero" << std::endl;
-        int opcion;
-        std ::cin >> opcion;
-        Personaje *personaje_izquierda;
-        if (opcion == 1)
-        {
-            personaje_izquierda = new Guerrero("guerrero.png", &window, false);
-        }
-        else if (opcion == 2)
-        {
-            personaje_izquierda = new Mago("mago.png", &window, false);
-        }
-        else if (opcion == 3)
-        {
-            personaje_izquierda = new Arquero("arquero.png", &window, false);
-        }
-        std::cout << "Personaje derecha: " << std::endl;
-        std::cout << "1. Guerrero" << std::endl;
-        std::cout << "2. Mago" << std::endl;
-        std::cout << "3. Arquero" << std::endl;
-        int opcion2;
-        std::cin >> opcion2;
-        Personaje *personaje_derecha;
-        if (opcion2 == 1)
-        {
-            personaje_derecha = new Guerrero("guerrero.png", &window, true);
-        }
-        else if (opcion2 == 2)
-        {
-            personaje_derecha = new Mago("mago.png", &window, true);
-        }
-        else if (opcion2 == 3)
-        {
-            personaje_derecha = new Arquero("arquero.png", &window, true);
-        } */
-
+    std ::cout << "Personaje izquierda: " << std::endl;
+    std ::cout << "1. Guerrero" << std::endl;
+    std ::cout << "2. Mago" << std::endl;
+    std ::cout << "3. Arquero" << std::endl;
+    int opcion;
+    std ::cin >> opcion;
     Personaje *personaje_izquierda;
+    if (opcion == 1)
+    {
+        personaje_izquierda = new Guerrero("guerrero.png", &window, false);
+    }
+    else if (opcion == 2)
+    {
+        personaje_izquierda = new Mago("mago.png", &window, false);
+    }
+    else if (opcion == 3)
+    {
+        personaje_izquierda = new Arquero("arquero.png", &window, false);
+    }
+    std::cout << "Personaje derecha: " << std::endl;
+    std::cout << "1. Guerrero" << std::endl;
+    std::cout << "2. Mago" << std::endl;
+    std::cout << "3. Arquero" << std::endl;
+    int opcion2;
+    std::cin >> opcion2;
+    Personaje *personaje_derecha;
+    if (opcion2 == 1)
+    {
+        personaje_derecha = new Guerrero("guerrero.png", &window, true);
+    }
+    else if (opcion2 == 2)
+    {
+        personaje_derecha = new Mago("mago.png", &window, true);
+    }
+    else if (opcion2 == 3)
+    {
+        personaje_derecha = new Arquero("arquero.png", &window, true);
+    }
+
+    /* Personaje *personaje_izquierda;
     Personaje *personaje_derecha;
 
     personaje_izquierda = new Guerrero("guerrero.png", &window, false);
-    personaje_derecha = new Mago("mago.png", &window, true);
+    personaje_derecha = new Mago("mago.png", &window, true); */
 
     // BUCLE JUEGO
     bool juego_terminado = false;                  // Variable para controlar el fin de juego
@@ -458,7 +457,7 @@ int main()
         // Verificación del fin de juego
         if (turno_actual->getVida() <= 0)
         {
-            std::cout << "Juego terminado. El jugador " << (turno_actual == personaje_izquierda ? "derecha" : "izquierda") << " ha perdido." << std::endl;
+            std::cout << "Juego terminado. El jugador " << (turno_actual == personaje_izquierda ? "derecha" : "izquierda") << " ha ganado." << std::endl;
             juego_terminado = true;
             renderizarEstadoDelJuego(&window, personaje_izquierda, personaje_derecha, sprite_fondo, sprite_vida, sprite_daño, font);
             sprite_gameover.setPosition(100, 50);
