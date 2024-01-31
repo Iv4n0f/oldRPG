@@ -32,8 +32,6 @@ void renderizarHUD(sf::RenderWindow *window, sf::Sprite sprite_hud) // 800x200
 {
     sprite_hud.setPosition(0, 400);
     window->draw(sprite_hud);
-    window->display(); // Mostrar la ventana
-    sf::sleep(sf::seconds(1));
 }
 class ObjetoJuego
 {
@@ -66,7 +64,6 @@ public:
     }
     void renderizarFallo()
     {
-        std::cout << "El ataque ha fallado" << std::endl;
         renderizarCentro(window, failSprite);
     }
 
@@ -120,6 +117,9 @@ public:
             renderizarAtaque(window, sprite_ataque, objetivo.getDerecha());
         }
     }
+
+    virtual void primera(Personaje &objetivo) {}
+    virtual void segunda(Personaje &objetivo) {}
 
     sf::Sprite getHUD() { return sprite_hud; }
 };
@@ -311,6 +311,57 @@ public:
     }
 };
 
+void renderizarEstadoDelJuego(sf::RenderWindow *window, Personaje *personaje_izquierda, Personaje *personaje_derecha, sf::Sprite sprite_fondo, sf::Sprite sprite_vida, sf::Sprite sprite_daño, sf::Font font)
+{
+    sprite_fondo.setPosition(0, 0);
+    window->draw(sprite_fondo);
+
+    sf::Text text_vida_izquierda;
+    text_vida_izquierda.setFont(font);
+    text_vida_izquierda.setCharacterSize(16);
+    text_vida_izquierda.setFillColor(sf::Color::Red);
+    text_vida_izquierda.setPosition(40, 10);
+    text_vida_izquierda.setString(std::to_string(personaje_izquierda->getVida()));
+    sprite_vida.setPosition(10, 10);
+    window->draw(sprite_vida);
+    window->draw(text_vida_izquierda);
+
+    sf::Text text_vida_derecha;
+    text_vida_derecha.setFont(font);
+    text_vida_derecha.setCharacterSize(16);
+    text_vida_derecha.setFillColor(sf::Color::Red);
+    text_vida_derecha.setPosition(window->getSize().x - 80, 10);
+    text_vida_derecha.setString(std::to_string(personaje_derecha->getVida()));
+    sprite_vida.setPosition(window->getSize().x - 40, 10);
+    window->draw(sprite_vida);
+    window->draw(text_vida_derecha);
+
+
+    sf::Color cafe(200,150,0);
+    sf::Text text_daño_izquierda;
+    text_daño_izquierda.setFont(font);
+    text_daño_izquierda.setCharacterSize(16);
+    text_daño_izquierda.setFillColor(cafe);
+    text_daño_izquierda.setPosition(40, 36);
+    text_daño_izquierda.setString(std::to_string(personaje_izquierda->getDaño()));
+    sprite_daño.setPosition(10, 30);
+    window->draw(sprite_daño);
+    window->draw(text_daño_izquierda);
+
+    sf::Text text_daño_derecha;
+    text_daño_derecha.setFont(font);
+    text_daño_derecha.setCharacterSize(16);
+    text_daño_derecha.setFillColor(cafe);
+    text_daño_derecha.setPosition(window->getSize().x - 80, 36);
+    text_daño_derecha.setString(std::to_string(personaje_derecha->getDaño()));
+    sprite_daño.setPosition(window->getSize().x - 40, 30);
+    window->draw(sprite_daño);
+    window->draw(text_daño_derecha);
+
+    personaje_izquierda->renderizar();
+    personaje_derecha->renderizar();
+}
+
 int main()
 {
     srand(time(NULL));
@@ -324,78 +375,157 @@ int main()
         return EXIT_FAILURE;
     }
 
+    // TEXTURAS
+    sf::Texture textura_fondo;
+    textura_fondo.loadFromFile("fondo.png");
+    sf::Sprite sprite_fondo;
+    sprite_fondo.setTexture(textura_fondo);
+
+    sf::Texture textura_gameover;
+    textura_gameover.loadFromFile("gameover.png");
+    sf::Sprite sprite_gameover;
+    sprite_gameover.setTexture(textura_gameover);
+
+    sf::Texture indicador_turno;
+    indicador_turno.loadFromFile("flecha.png");
+    sf::Sprite sprite_indicador_turno;
+    sprite_indicador_turno.setTexture(indicador_turno);
+
+    sf::Texture textura_vida;
+    textura_vida.loadFromFile("vida.png");
+    sf::Sprite sprite_vida;
+    sprite_vida.setTexture(textura_vida);
+
+    sf::Texture textura_daño;
+    textura_daño.loadFromFile("daño.png");
+    sf::Sprite sprite_daño;
+    sprite_daño.setTexture(textura_daño);
+
     // Crear personajes
-    std ::cout << "Personaje izquierda: " << std::endl;
-    std ::cout << "1. Guerrero" << std::endl;
-    std ::cout << "2. Mago" << std::endl;
-    std ::cout << "3. Arquero" << std::endl;
-    int opcion;
-    std ::cin >> opcion;
+    /*     std ::cout << "Personaje izquierda: " << std::endl;
+        std ::cout << "1. Guerrero" << std::endl;
+        std ::cout << "2. Mago" << std::endl;
+        std ::cout << "3. Arquero" << std::endl;
+        int opcion;
+        std ::cin >> opcion;
+        Personaje *personaje_izquierda;
+        if (opcion == 1)
+        {
+            personaje_izquierda = new Guerrero("guerrero.png", &window, false);
+        }
+        else if (opcion == 2)
+        {
+            personaje_izquierda = new Mago("mago.png", &window, false);
+        }
+        else if (opcion == 3)
+        {
+            personaje_izquierda = new Arquero("arquero.png", &window, false);
+        }
+        std::cout << "Personaje derecha: " << std::endl;
+        std::cout << "1. Guerrero" << std::endl;
+        std::cout << "2. Mago" << std::endl;
+        std::cout << "3. Arquero" << std::endl;
+        int opcion2;
+        std::cin >> opcion2;
+        Personaje *personaje_derecha;
+        if (opcion2 == 1)
+        {
+            personaje_derecha = new Guerrero("guerrero.png", &window, true);
+        }
+        else if (opcion2 == 2)
+        {
+            personaje_derecha = new Mago("mago.png", &window, true);
+        }
+        else if (opcion2 == 3)
+        {
+            personaje_derecha = new Arquero("arquero.png", &window, true);
+        } */
+
     Personaje *personaje_izquierda;
-    if (opcion == 1)
-    {
-        personaje_izquierda = new Guerrero("guerrero.png", &window, false);
-    }
-    else if (opcion == 2)
-    {
-        personaje_izquierda = new Mago("mago.png", &window, false);
-    }
-    else if (opcion == 3)
-    {
-        personaje_izquierda = new Arquero("arquero.png", &window, false);
-    }
-    std::cout << "Personaje derecha: " << std::endl;
-    std::cout << "1. Guerrero" << std::endl;
-    std::cout << "2. Mago" << std::endl;
-    std::cout << "3. Arquero" << std::endl;
-    int opcion2;
-    std::cin >> opcion2;
     Personaje *personaje_derecha;
-    if (opcion2 == 1)
-    {
-        personaje_derecha = new Guerrero("guerrero.png", &window, true);
-    }
-    else if (opcion2 == 2)
-    {
-        personaje_derecha = new Mago("mago.png", &window, true);
-    }
-    else if (opcion2 == 3)
-    {
-        personaje_derecha = new Arquero("arquero.png", &window, true);
-    }
+
+    personaje_izquierda = new Guerrero("guerrero.png", &window, false);
+    personaje_derecha = new Mago("mago.png", &window, true);
 
     // BUCLE JUEGO
     bool juego_terminado = false;                  // Variable para controlar el fin de juego
     Personaje *turno_actual = personaje_izquierda; // Empezamos con el jugador izquierda
+    Personaje *enemigo_actual = personaje_derecha; // Empezamos con el jugador derecha
+    renderizarEstadoDelJuego(&window, personaje_izquierda, personaje_derecha, sprite_fondo, sprite_vida, sprite_daño, font);
+
     while (window.isOpen() && !juego_terminado)
     {
-        // Otros procesamientos del bucle principal
-
         // Verificación del fin de juego
         if (turno_actual->getVida() <= 0)
         {
             std::cout << "Juego terminado. El jugador " << (turno_actual == personaje_izquierda ? "derecha" : "izquierda") << " ha perdido." << std::endl;
             juego_terminado = true;
-            continue;
+            renderizarEstadoDelJuego(&window, personaje_izquierda, personaje_derecha, sprite_fondo, sprite_vida, sprite_daño, font);
+            sprite_gameover.setPosition(100, 50);
+            window.draw(sprite_gameover);
+            window.display();
+            sf::sleep(sf::seconds(3));
         }
 
         // Mostrar HUD correspondiente al turno actual
         if (turno_actual == personaje_izquierda)
         {
+            sprite_indicador_turno.setPosition(100, 20);
+            window.draw(sprite_indicador_turno);
             renderizarHUD(&window, personaje_izquierda->getHUD());
         }
         else
         {
+            sprite_indicador_turno.setPosition(window.getSize().x - 200, 20);
+            window.draw(sprite_indicador_turno);
             renderizarHUD(&window, personaje_derecha->getHUD());
         }
 
-        // Esperar entrada del jugador
-        // Procesamiento de la entrada del jugador
-        // Resolución del ataque
-        // Renderizado del ataque
+        window.display();
+        sf::sleep(sf::milliseconds(100));
 
-        // Cambiar el turno
-        turno_actual = (turno_actual == personaje_izquierda) ? personaje_derecha : personaje_izquierda;
+        // Manejar eventos del teclado para esperar la entrada del jugador
+        sf::Event event;
+        bool jugada_realizada = false;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                window.close();
+            }
+            else if (event.type == sf::Event::KeyPressed)
+            {
+                // Procesar la tecla presionada
+                if (event.key.code == sf::Keyboard::Z)
+                {
+                    turno_actual->ataque(*enemigo_actual);
+                    jugada_realizada = true;
+                }
+                else if (event.key.code == sf::Keyboard::X)
+                {
+                    turno_actual->primera(*enemigo_actual);
+                    jugada_realizada = true;
+                }
+                else if (event.key.code == sf::Keyboard::C)
+                {
+                    turno_actual->segunda(*enemigo_actual);
+                    jugada_realizada = true;
+                }
+            }
+        }
+
+        // Cambiar el turno solo si se realizó una jugada en este turno
+        if (jugada_realizada)
+        {
+            // Renderizar el estado actual del juego despues del ataque
+            window.clear();
+            renderizarEstadoDelJuego(&window, personaje_izquierda, personaje_derecha, sprite_fondo, sprite_vida, sprite_daño, font);
+            window.display();
+            sf::sleep(sf::milliseconds(100));
+            turno_actual = (turno_actual == personaje_izquierda) ? personaje_derecha : personaje_izquierda;
+            enemigo_actual = (enemigo_actual == personaje_izquierda) ? personaje_derecha : personaje_izquierda;
+        }
+        sf::sleep(sf::milliseconds(500));
     }
 
     return 0;
