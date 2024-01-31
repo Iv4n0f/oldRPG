@@ -211,7 +211,8 @@ public:
 };
 
 int main()
-{
+{   
+    srand(time(NULL));
     sf::RenderWindow window(sf::VideoMode(800, 600), "Escalando y posicionando un Sprite");
 
     Guerrero guerrero("guerrero.png", &window);
